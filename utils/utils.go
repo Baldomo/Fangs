@@ -1,8 +1,6 @@
 package utils
 
-import (
-	"path"
-)
+import "path"
 
 var dataKinds = map[string]string{
 	".mp4": "video/mp4",

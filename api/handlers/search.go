@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"github.com/Baldomo/Claws/api/sse"
+	"github.com/Baldomo/Fangs/api/sse"
 	"net/http"
 )
 
-func SearchHandler(w http.ResponseWriter, r *http.Request) http.HandlerFunc {
+func SearchHandler() http.HandlerFunc {
 	nc := sse.NewNotificationCenter()
 	c := make(chan []byte)
 
