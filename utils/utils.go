@@ -2,7 +2,6 @@ package utils
 
 import (
 	"path"
-	"strings"
 )
 
 var dataKinds = map[string]string{
@@ -10,10 +9,12 @@ var dataKinds = map[string]string{
 	".m3u8": "application/x-mpegURL",
 	".mkv": "video/x-matroska",
 	"==": "file",
-	_: "",
 }
 
-func getDataKind(link string) {
+func getDataKind(link string) string {
 	_, file := path.Split(link)
-
+	if ext, ok := dataKinds[file]; ok {
+		return ext
+	}
+	return "video/*"
 }

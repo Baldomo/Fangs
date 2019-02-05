@@ -1,4 +1,4 @@
-module github.com/Baldomo/Claws
+module github.com/Baldomo/Fangs
 
 require (
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
