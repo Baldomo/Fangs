@@ -1,12 +1,32 @@
 package routes
 
-import "net/http"
+import (
+	"github.com/Baldomo/Fangs/api/handlers"
+	"github.com/valyala/fasthttp"
+)
 
 type Route struct {
-	Name        string
-	Method      string
-	Pattern     string
-	HandlerFunc http.HandlerFunc
+	Name          string
+	Pattern       string
+	HandlerFunc   fasthttp.RequestHandler
 }
 
-type Routes []Route
+var GET = []Route{
+	{
+		"Movies",
+		"/api/v1/movies",
+		handlers.SearchHandler,
+	}, {
+		"Status",
+		"/api/v1/status",
+		handlers.StatusHandler,
+	},
+}
+
+var POST = []Route{
+	{
+		"Login",
+		"/api/v1/login",
+		handlers.LoginHandler,
+	},
+}
