@@ -6,9 +6,9 @@ import (
 )
 
 type Route struct {
-	Name          string
-	Pattern       string
-	HandlerFunc   fasthttp.RequestHandler
+	Name        string
+	Pattern     string
+	HandlerFunc fasthttp.RequestHandler
 }
 
 var GET = []Route{

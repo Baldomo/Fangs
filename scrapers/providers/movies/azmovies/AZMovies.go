@@ -2,49 +2,59 @@ package azmovies
 
 import (
 	"fmt"
+	"github.com/Baldomo/Fangs/logger"
 	"github.com/gocolly/colly"
 	"github.com/gocolly/colly/extensions"
-	"net/http/cookiejar"
-	"net/url"
+	"net/http"
+	"regexp"
 )
 
-var urls = []string{
-	"https://azmovies.xyz",
-}
+var (
+	urls = []string{
+		"https://azmovies.xyz",
+	}
 
-var movieUri = "%s/watch.php?title=%s"
+	movieUri = "%s/watch.php?title=%s"
+
+	cookies []*http.Cookie
+)
 
 func Scrape(movieTitle string) {
-	c := colly.NewCollector(
-		colly.AllowedDomains(urls...),
+	collector := colly.NewCollector(
 		colly.Async(true),
 	)
-	c.Limit(&colly.LimitRule{
+
+	collector.Limit(&colly.LimitRule{
 		Parallelism: 2,
 	})
-	extensions.RandomUserAgent(c)
-	c.OnHTML("#serverul li a", func(e *colly.HTMLElement) {
-		// TODO: collect movie
+
+	extensions.RandomUserAgent(collector)
+
+	collector.OnHTML("#serverul li a", func(e *colly.HTMLElement) {
+		logger.Debug("Got link", "movie", e.Attr("href"))
+		// TODO resolve
 	})
-	c.OnResponse(func(r *colly.Response) {
-		// r.Body
-		//html := string(r.Body)
-		//re := regexp.MustCompile(`document\.cookie\s*=\s*"(.*)=(.*)";`)
-		//matches := re.FindAllStringSubmatch(html, -1)
-	})
+
+	collector.OnHTML("script", scrapeCookies)
+
 	for _, u := range urls {
-		cookies := c.Cookies(u)
-		jar, _ := cookiejar.New(nil)
-		parsedUrl, _ := url.Parse(u)
-		jar.SetCookies(parsedUrl, cookies)
-		c.SetCookieJar(jar)
-		// TODO: add cookies from parsed page
-		//c.SetCookies(u, []*http.Cookie{
-		//	{
-		//
-		//	},
-		//})
-		_ = c.Visit(fmt.Sprintf(movieUri, u, movieTitle))
+		collector.SetCookies(u, cookies)
+		collector.Visit(fmt.Sprintf(movieUri, u, movieTitle))
 	}
-	c.Wait()
+
+	collector.Wait()
+}
+
+func scrapeCookies(e *colly.HTMLElement) {
+	html := string(e.Text)
+	re := regexp.MustCompile(`document\.cookie\s*=\s*"(.*)=(.*)";`)
+	matches := re.FindAllStringSubmatch(html, -1)
+
+	for _, match := range matches {
+		cookies = append(cookies, &http.Cookie{
+			Name:     match[0],
+			Value:    match[1],
+			HttpOnly: false,
+		})
+	}
 }

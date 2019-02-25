@@ -38,7 +38,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"golang.org/x/net/html"
 	"google.golang.org/appengine/urlfetch"
 
 	"github.com/PuerkitoBio/goquery"
@@ -103,7 +102,9 @@ type Collector struct {
 	// without explicit charset declaration. This feature uses https://github.com/saintfish/chardet
 	DetectCharset bool
 	// RedirectHandler allows control on how a redirect will be managed
-	RedirectHandler   func(req *http.Request, via []*http.Request) error
+	RedirectHandler func(req *http.Request, via []*http.Request) error
+	// CheckHead performs a HEAD request before every GET to pre-validate the response
+	CheckHead         bool
 	store             storage.Storage
 	debugger          debug.Debugger
 	robotsMap         map[string]*robotstxt.RobotsData
@@ -157,6 +158,13 @@ type cookieJarSerializer struct {
 }
 
 var collectorCounter uint32
+
+// The key type is unexported to prevent collisions with context keys defined in
+// other packages.
+type key int
+
+// ProxyURLKey is the context key for the request proxy address.
+const ProxyURLKey key = iota
 
 var (
 	// ErrForbiddenDomain is the error thrown if visiting
@@ -396,7 +404,17 @@ func (c *Collector) Appengine(ctx context.Context) {
 // request to the URL specified in parameter.
 // Visit also calls the previously provided callbacks
 func (c *Collector) Visit(URL string) error {
+	if c.CheckHead {
+		if check := c.scrape(URL, "HEAD", 1, nil, nil, nil, true); check != nil {
+			return check
+		}
+	}
 	return c.scrape(URL, "GET", 1, nil, nil, nil, true)
+}
+
+// Head starts a collector job by creating a HEAD request.
+func (c *Collector) Head(URL string) error {
+	return c.scrape(URL, "HEAD", 1, nil, nil, nil, false)
 }
 
 // Post starts a collector job by creating a POST request.
@@ -426,6 +444,7 @@ func (c *Collector) PostMultipart(URL string, requestData map[string][]byte) err
 // Set requestData, ctx, hdr parameters to nil if you don't want to use them.
 // Valid methods:
 //   - "GET"
+//   - "HEAD"
 //   - "POST"
 //   - "PUT"
 //   - "DELETE"
@@ -484,7 +503,7 @@ func (c *Collector) scrape(u, method string, depth int, requestData io.Reader, c
 	if !c.isDomainAllowed(parsedURL.Host) {
 		return ErrForbiddenDomain
 	}
-	if !c.IgnoreRobotsTxt {
+	if method != "HEAD" && !c.IgnoreRobotsTxt {
 		if err = c.checkRobots(parsedURL); err != nil {
 			return err
 		}
@@ -580,6 +599,9 @@ func (c *Collector) fetch(u, method string, depth int, requestData io.Reader, ct
 
 	origURL := req.URL
 	response, err := c.backend.Cache(req, c.MaxBodySize, c.CacheDir)
+	if proxyURL, ok := req.Context().Value(ProxyURLKey).(string); ok {
+		request.ProxyURL = proxyURL
+	}
 	if err := c.handleOnError(response, err, request, ctx); err != nil {
 		return err
 	}
@@ -959,7 +981,7 @@ func (c *Collector) handleOnXML(resp *Response) error {
 		if err != nil {
 			return err
 		}
-		if e := htmlquery.FindOne(doc, "//base/@href"); e != nil {
+		if e := htmlquery.FindOne(doc, "//base"); e != nil {
 			for _, a := range e.Attr {
 				if a.Key == "href" {
 					resp.Request.baseURL, _ = url.Parse(a.Val)
@@ -969,7 +991,7 @@ func (c *Collector) handleOnXML(resp *Response) error {
 		}
 
 		for _, cc := range c.xmlCallbacks {
-			htmlquery.FindEach(doc, cc.Query, func(i int, n *html.Node) {
+			for _, n := range htmlquery.Find(doc, cc.Query) {
 				e := NewXMLElementFromHTMLNode(resp, n)
 				if c.debugger != nil {
 					c.debugger.Event(createEvent("xml", resp.Request.ID, c.ID, map[string]string{
@@ -978,7 +1000,7 @@ func (c *Collector) handleOnXML(resp *Response) error {
 					}))
 				}
 				cc.Function(e)
-			})
+			}
 		}
 	} else if strings.Contains(contentType, "xml") {
 		doc, err := xmlquery.Parse(bytes.NewBuffer(resp.Body))

@@ -72,7 +72,7 @@ func LoginHandler(ctx *fasthttp.RequestCtx) {
 		"ip":      ctx.RemoteAddr().String(),
 
 		// Expires in 1 hour
-		"exp":     time.Now().Add(time.Hour),
+		"exp": time.Now().Add(time.Hour),
 	})
 
 	// Try to sign token
