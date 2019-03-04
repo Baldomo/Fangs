@@ -9,8 +9,8 @@ import (
 
 var jack = &lumberjack.Logger{
 	Filename:   "/var/log/fangs/fangs.log",
-	MaxSize:    10,
-	MaxBackups: 10,
+	MaxSize:    100,
+	MaxBackups: 20,
 	MaxAge:     30,
 	Compress:   true,
 	LocalTime:  true,

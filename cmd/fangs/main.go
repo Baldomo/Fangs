@@ -25,6 +25,9 @@ func main() {
 		)
 	}
 
-	err := fasthttp.ListenAndServe(":8080", router.Handler)
-	logger.Fatal("server stopped!", "error", err)
+	logger.Debug("server starting")
+	err := fasthttp.ListenAndServe("0.0.0.0:8080", router.Handler)
+	if err != nil {
+		logger.Fatal("server stopped!", "error", err)
+	}
 }

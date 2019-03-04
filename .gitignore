@@ -1,2 +1,8 @@
+# Build files/artifacts
+build/
+
+# Goland configuration
 .idea/
+
+# Dumb MacOS-only files
 .DS_Store
