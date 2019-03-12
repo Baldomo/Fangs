@@ -10,8 +10,7 @@ var dataKinds = map[string]string{
 }
 
 func getDataKind(link string) string {
-	_, file := path.Split(link)
-	if ext, ok := dataKinds[file]; ok {
+	if ext, ok := dataKinds[path.Ext(link)]; ok {
 		return ext
 	}
 	return "video/*"

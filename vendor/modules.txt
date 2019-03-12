@@ -1,3 +1,5 @@
+# github.com/Baldomo/v8-go v1.0.1
+github.com/Baldomo/v8-go
 # github.com/PuerkitoBio/goquery v1.5.0
 github.com/PuerkitoBio/goquery
 # github.com/andybalholm/cascadia v1.0.0
@@ -26,7 +28,7 @@ github.com/gocolly/colly
 github.com/gocolly/colly/extensions
 github.com/gocolly/colly/debug
 github.com/gocolly/colly/storage
-# github.com/golang/protobuf v1.2.0
+# github.com/golang/protobuf v1.3.0
 github.com/golang/protobuf/proto
 # github.com/kennygrant/sanitize v1.2.4
 github.com/kennygrant/sanitize
@@ -57,16 +59,16 @@ go.uber.org/zap/internal/bufferpool
 go.uber.org/zap/buffer
 go.uber.org/zap/internal/color
 go.uber.org/zap/internal/exit
-# golang.org/x/crypto v0.0.0-20190222235706-ffb98f73852f
+# golang.org/x/crypto v0.0.0-20190228161510-8dd112bcdc25
 golang.org/x/crypto/salsa20
 golang.org/x/crypto/internal/subtle
 golang.org/x/crypto/salsa20/salsa
-# golang.org/x/net v0.0.0-20190213061140-3a22650c66bd
+# golang.org/x/net v0.0.0-20190301231341-16b79f2e4e95
 golang.org/x/net/html
 golang.org/x/net/html/charset
 golang.org/x/net/html/atom
 golang.org/x/net/context
-# golang.org/x/text v0.3.0
+# golang.org/x/text v0.3.1-0.20180807135948-17ff2d5776d2
 golang.org/x/text/encoding
 golang.org/x/text/encoding/charmap
 golang.org/x/text/encoding/htmlindex
@@ -81,6 +83,8 @@ golang.org/x/text/encoding/unicode
 golang.org/x/text/language
 golang.org/x/text/internal/utf8internal
 golang.org/x/text/runes
+golang.org/x/text/internal/language
+golang.org/x/text/internal/language/compact
 golang.org/x/text/internal/tag
 # google.golang.org/appengine v1.4.0
 google.golang.org/appengine/urlfetch

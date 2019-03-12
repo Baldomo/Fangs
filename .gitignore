@@ -6,3 +6,8 @@ build/
 
 # Dumb MacOS-only files
 .DS_Store
+
+# V8 bindings, which have to be generated
+vendor/github.com/Baldomo/v8-go/
+
+# Vendor directory, to keep repo size down

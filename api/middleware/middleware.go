@@ -60,6 +60,7 @@ func Logger(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 		logger.Debug("Got request",
 			"method", string(ctx.Method()),
 			"url", string(ctx.Path()),
+			"raw_body", string(ctx.Request.Body()),
 		)
 		h(ctx)
 	}

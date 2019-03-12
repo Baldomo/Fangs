@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"github.com/Baldomo/Fangs/utils"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -21,7 +22,7 @@ var l *zap.SugaredLogger
 func init() {
 	var logger *zap.Logger
 
-	if _, ok := os.LookupEnv("FANGS_DEV"); ok {
+	if utils.IsDebug() {
 		core := zapcore.NewCore(
 			zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig()),
 			zapcore.AddSync(os.Stdout),
