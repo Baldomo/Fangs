@@ -13,10 +13,6 @@ type Route struct {
 
 var GET = []Route{
 	{
-		"Movies",
-		"/api/v1/movies",
-		handlers.SearchHandler,
-	}, {
 		"Status",
 		"/api/v1/status",
 		handlers.StatusHandler,

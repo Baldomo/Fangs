@@ -9,7 +9,7 @@ var dataKinds = map[string]string{
 	"==":    "file",
 }
 
-func getDataKind(link string) string {
+func GetDataKind(link string) string {
 	if ext, ok := dataKinds[path.Ext(link)]; ok {
 		return ext
 	}

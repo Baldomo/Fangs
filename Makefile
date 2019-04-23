@@ -61,8 +61,7 @@ deps-go:
 	@go mod vendor
 
 dev: ## Runs Fangs in dev mode (FANGS_DEV set to "true")
-	@export FANGS_DEV="true"
-	@go run -mod=vendor ./cmd/fangs
+	@FANGS_DEV=true go run -mod=vendor ./cmd/fangs
 
 docker-build: ## Builds the docker image
 	@echo "Building image"
